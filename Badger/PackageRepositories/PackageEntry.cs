@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Badger {
+    [DebuggerDisplay(Debugger2.DISPLAY)]
     public class PackageEntry {
         public string SHA1 { get; set; }
         public string FileName { get; set; }
@@ -18,8 +20,8 @@ namespace Badger {
         private const string SIZE = "SIZE";
         private const string STAGINGPERCENTAGE = "PERCENT";
             
-        private static string RegexPattern = $@"(?<{SHA}>[0-9a-f]{{5,40}})(\s*)(?<{FILENAME}>\S+)(\s*)(?<{SIZE}>[0-9]+)(\s*)(#(\s*)(?<{STAGINGPERCENTAGE}>[0-9]{{2}})\s*%\s*)?";
-        private static Regex Regex = new Regex(RegexPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly string RegexPattern = $@"(?<{SHA}>[0-9a-f]{{5,40}})(\s*)(?<{FILENAME}>\S+)(\s*)(?<{SIZE}>[0-9]+)(\s*)(#(\s*)(?<{STAGINGPERCENTAGE}>[0-9]{{2}})\s*%\s*)?";
+        private static readonly Regex Regex = new Regex(RegexPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public static IEnumerable<PackageEntry> ParseMany(string Text) {
             var LineChars = new[] { '\r', '\n' };
@@ -72,9 +74,15 @@ namespace Badger {
                 : $@"{SHA1} {FileName} {FileSize}# {StagingPercentage:00}%"
                 ;
 
-
             return ret;
         }
+
+        protected virtual string DebuggerDisplay {
+            get {
+                return ToString();
+            }
+        }
+
 
         public static bool operator ==(PackageEntry A, PackageEntry B) {
             var ret = true

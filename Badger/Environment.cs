@@ -11,9 +11,14 @@ namespace Badger {
 
 
         public const string VersionFolderPrefix = "app-";
-        public const string PackagesSubfolder = "packages";
+        public const string PackagesSubFolderName = "packages";
+        public const string PackagesSubFolderPath = PackagesSubFolderName;
+
         public const string InstallIdFileName = ".betaId";
         public const string ReleasesFileName = "RELEASES";
+
+        public const string TempSubFolderName = "SquirrelTemp";
+        public const string TempSubFolderPath = PackagesSubFolderPath + @"\" + TempSubFolderName;
 
         protected static bool IsVersionFolder(string FolderName, out Version Version) {
             var ret = false;
@@ -36,7 +41,7 @@ namespace Badger {
         /// </summary>
         public string VersionFolder { get; protected set; }
         /// <summary>
-        /// The verion would be something like: 19.4.25
+        /// The version would be something like: 19.4.25
         /// </summary>
         public Version Version { get; protected set; }
 
@@ -46,32 +51,45 @@ namespace Badger {
         public string InstallFolder { get; protected set; }
 
         /// Something like:C:\Users\TonyValenti\AppData\Local\Clio\packages
-        public string PackagesFolder { get; protected set; }
+        public string LocalRepositoryFolder { get; protected set; }
 
         public string InstallIdFolder { get; protected set; }
         public string InstallIdFullPath { get; protected set; }
         public abstract Guid? InstallId { get; set; }
 
-        public string ReleasesFolder { get; protected set; }
-        public string ReleasesFullPath { get; protected set; }
+        public string TempFolder { get; protected set; }
     }
 
 
-    class DefaultEnvironment : Environment  {
+    public class DefaultEnvironment : Environment  {
+
+        private System.Reflection.Assembly EntryAssembly() {
+            var ret = System.Reflection.Assembly.GetEntryAssembly();
+
+            ret = ret ?? new System.Diagnostics.StackTrace().GetFrames().Last().GetMethod().Module.Assembly;
+
+            return ret;
+        }
+
         public DefaultEnvironment() {
             //Set the version folder and the version number.
             {
-                var ret = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                var ret = System.IO.Path.GetDirectoryName(EntryAssembly().Location);
                 var pret = ret;
 
                 while (string.IsNullOrEmpty(pret)) {
-                    var CurrentFolder = System.IO.Path.GetFileName(pret);
-                    if (IsVersionFolder(CurrentFolder, out var Version)) {
-                        ret = pret;
-                        this.Version = Version;
+                    try {
+                        var CurrentFolder = System.IO.Path.GetFileName(pret);
+                        if (IsVersionFolder(CurrentFolder, out var Version)) {
+                            ret = pret;
+                            this.Version = Version;
+                            break;
+                        } else {
+                            pret = System.IO.Path.GetDirectoryName(pret);
+                        }
+                    } catch (Exception ex) {
+                        ex.Ignore();
                         break;
-                    } else {
-                        pret = System.IO.Path.GetDirectoryName(pret);
                     }
                 }
 
@@ -84,17 +102,25 @@ namespace Badger {
             }
 
             {
-                this.PackagesFolder = System.IO.Path.Combine(InstallFolder, PackagesSubfolder);
+                this.LocalRepositoryFolder = System.IO.Path.Combine(InstallFolder, PackagesSubFolderPath);
             }
 
             {
-                this.InstallIdFolder = PackagesFolder;
+                this.TempFolder = System.IO.Path.Combine(InstallFolder, TempSubFolderPath);
+
+                try {
+                    if (System.IO.Directory2.EnsureWritable(TempFolder)) {
+                        TempFolder = System.IO.Path.GetTempPath();
+                    }
+                } catch(Exception ex) {
+
+                }
+
+            }
+
+            {
+                this.InstallIdFolder = LocalRepositoryFolder;
                 this.InstallIdFullPath = System.IO.Path.Combine(InstallIdFolder, InstallIdFileName);
-            }
-
-            {
-                this.ReleasesFolder = PackagesFolder;
-                this.ReleasesFullPath = System.IO.Path.Combine(ReleasesFolder, ReleasesFileName);
             }
 
         }

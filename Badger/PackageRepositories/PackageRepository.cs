@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Badger.PackageRepositories {
+namespace Badger {
     public abstract class PackageRepository {
 
         public abstract Task<List<PackageEntry>> AvailablePackages();
@@ -27,16 +27,7 @@ namespace Badger.PackageRepositories {
             return ret;
         }
 
-        protected abstract Task<Stream> AcquirePackageInteral(PackageEntry Entry);
+        public abstract Task<Stream> AcquirePackageStream(PackageEntry Entry);
 
-        public async Task<CachedPackage> AcquirePackage(PackageEntry Entry) {
-            var Stream = await AcquirePackageInteral(Entry)
-                .DefaultAwait()
-                ;
-
-            var Package = CachedPackage.Create(Stream, Entry.SHA1);
-
-            return Package;
-        }
     }
 }

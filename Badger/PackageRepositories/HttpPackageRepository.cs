@@ -6,21 +6,82 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Badger.PackageRepositories {
+namespace Badger {
     public class HttpPackageRepository : PackageRepository {
-        public string RepositoryUrl { get; private set; }
-        public string ReleasesUrl { get; private set; }
+        public Uri RepositoryRootUrl { get; private set; }
+        public Uri ReleasesUrl { get; private set; }
 
-        public HttpPackageRepository(string Url) {
-            Initialize($@"{Url}", $@"{Url}/{Environment.ReleasesFileName}");
+        protected static class QueryParameters {
+            public const string LocalVersion = "localVersion";
+            public const string Architecture = "arch";
+
+            public const string Architecture_Unknown = "unknown";
+            public const string Architecture_x86 = "x86";
+            public const string Architecture_Amd64 = "amd64";
+
+
+            public const string InstallId = "installid";
+
         }
 
-        public HttpPackageRepository(string RepositoryUrl, string ReleasesUrl) {
-
+        protected virtual Version Repository_QueryParameter_Version() {
+            return Environment.Default.Version;
         }
 
-        private void Initialize(string RepositoryUrl, string ReleasesUrl) {
-            this.RepositoryUrl = RepositoryUrl;
+        protected virtual string Repository_QueryParameter_Architecture() {
+            var ret = QueryParameters.Architecture_Unknown;
+            if (System.Environment.Is64BitOperatingSystem) {
+                ret = QueryParameters.Architecture_Amd64;
+            } else {
+                ret = QueryParameters.Architecture_x86;
+            }
+
+            return ret;
+        }
+
+
+        protected virtual string Repository_QueryParameter_InstallId() {
+            return Environment.Default.InstallId?.ToString();
+        }
+
+        protected virtual Dictionary<String, String> Repository_QueryParameters() {
+            var ret = new Dictionary<string, string>() {
+                {QueryParameters.LocalVersion, Repository_QueryParameter_Version()?.ToString() },
+                {QueryParameters.Architecture, Repository_QueryParameter_Architecture() },
+                {QueryParameters.InstallId, Repository_QueryParameter_InstallId()}
+            };
+
+            return ret;
+        }
+
+
+        public HttpPackageRepository(string RepositoryUrl, string ReleasesUrl = null) {
+            var RepositoryUri = new Uri(RepositoryUrl);
+            var ReleasesUri = String.IsNullOrWhiteSpace(ReleasesUrl)
+                ? null
+                : new Uri(ReleasesUrl)
+                ;
+
+            Initialize(RepositoryUri, ReleasesUri);
+        }
+
+        public HttpPackageRepository(Uri RepositoryUri, Uri ReleasesUri = null) {
+            Initialize(RepositoryUri, ReleasesUri);
+        }
+
+        private void Initialize(Uri RepositoryUrl, Uri ReleasesUrl) {
+            this.RepositoryRootUrl = RepositoryUrl;
+
+            {
+                if(ReleasesUrl == null) {
+                    var Builder = new UriBuilder(RepositoryUrl);
+                    Builder.AppendPath(Environment.ReleasesFileName);
+                    Builder.AppendQuery(Repository_QueryParameters());
+
+                    ReleasesUrl = Builder.Uri;
+                }
+            }
+
             this.ReleasesUrl = ReleasesUrl;
         }
 
@@ -46,9 +107,12 @@ namespace Badger.PackageRepositories {
             return ret;
         }
 
-        protected override async Task<Stream> AcquirePackageInteral(PackageEntry Entry) {
+        public override async Task<Stream> AcquirePackageStream(PackageEntry Entry) {
 
-            var ret = await HttpClient.GetStreamAsync($@"{RepositoryUrl}/{Entry.FileName}")
+            var Uri = new UriBuilder(RepositoryRootUrl);
+            Uri.AppendPath(Entry.FileName);
+
+            var ret = await HttpClient.GetStreamAsync(Uri.ToString())
                 .DefaultAwait()
                 ;
 

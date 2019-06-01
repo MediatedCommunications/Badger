@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Badger.Security  {
+namespace Badger.Security {
     public static class SHA1 {
 
         public static string FromFile(string filePath) {
@@ -28,12 +28,6 @@ namespace Badger.Security  {
         }
 
 
-    }
-
-    public class InvalidSHA1Exception : System.Exception {
-        public InvalidSHA1Exception(string Expected, string Provided) : base($@"The SHA1 was expected to be {Expected} but it was actually {Provided}.") {
-
-        }
     }
 
 }

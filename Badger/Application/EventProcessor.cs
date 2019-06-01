@@ -74,12 +74,13 @@ namespace Badger.AwareApplications {
         /// If provided, use these command line arguments instead of the default ones.
         /// </param>
         /// <returns></returns>
-        public static EventProcessorEventType HandleEvents(
-            Action<EventProcessorArgs> onInstall = null,
-            Action<EventProcessorArgs> onUpdate = null,
-            Action<EventProcessorArgs> onObsolete = null,
-            Action<EventProcessorArgs> onUninstall = null,
-            Action<EventProcessorArgs> onFirstRun = null,
+        public static async Task<EventProcessorEventType> HandleEvents(
+            Func<EventProcessorArgs, Task> onInstall = null,
+            Func<EventProcessorArgs, Task> onUpdate = null,
+            Func<EventProcessorArgs, Task> onObsolete = null,
+            Func<EventProcessorArgs, Task> onUninstall = null,
+            Func<EventProcessorArgs, Task> onFirstRun = null,
+            Func<EventProcessorArgs, Task> onNone = null,
             string[] arguments = null) {
 
             //Get our command line arguments.  We skip one because the first argument is our process name.
@@ -118,17 +119,20 @@ namespace Badger.AwareApplications {
             };
 
             //Set up a mapping between the event and their associated actions. 
-            var EventsToActions = new Dictionary<EventProcessorEventType, Action> {
-                [EventProcessorEventType.FirstRun] = () => onFirstRun?.Invoke(EventArgs),
-                [EventProcessorEventType.Install] = () => onInstall?.Invoke(EventArgs),
-                [EventProcessorEventType.Update] = () => onUpdate?.Invoke(EventArgs),
-                [EventProcessorEventType.Obsolete] = () => onObsolete?.Invoke(EventArgs),
-                [EventProcessorEventType.Uninstall] = () => onUninstall?.Invoke(EventArgs),
+            var EventsToActions = new Dictionary<EventProcessorEventType, Func<EventProcessorArgs, Task>> {
+                [EventProcessorEventType.FirstRun] = onFirstRun,
+                [EventProcessorEventType.Install] = onInstall,
+                [EventProcessorEventType.Update] = onUpdate,
+                [EventProcessorEventType.Obsolete] = onObsolete,
+                [EventProcessorEventType.Uninstall] = onUninstall,
+                [EventProcessorEventType.None] = onNone,
             };
 
             //Trigger the action if we can.
-            if(EventsToActions.TryGetValue(CurrentEventType, out var Action)) {
-                Action?.Invoke();
+            if(EventsToActions.TryGetValue(CurrentEventType, out var Action) && Action != null) {
+                await Action(EventArgs)
+                    .ConfigureAwait(false)
+                    ;
             }
 
             if(CurrentEventType != EventProcessorEventType.FirstRun && CurrentEventType != EventProcessorEventType.None) {

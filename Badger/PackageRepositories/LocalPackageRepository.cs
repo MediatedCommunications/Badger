@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Badger.PackageRepositories {
+namespace Badger {
     public class LocalPackageRepository : PackageRepository {
 
         public string RepositoryFolder { get; private set; }
@@ -35,7 +35,7 @@ namespace Badger.PackageRepositories {
             return Task.FromResult(ret);
         }
 
-        protected override Task<Stream> AcquirePackageInteral(PackageEntry Entry) {
+        public override Task<Stream> AcquirePackageStream(PackageEntry Entry) {
             var Source = $@"{RepositoryFolder}/{Entry.FileName}";
 
             var ret = (Stream)System.IO.File.OpenRead(Source);
