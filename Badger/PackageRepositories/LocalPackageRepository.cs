@@ -12,7 +12,7 @@ namespace Badger {
         public string ReleasesFullPath { get; private set; }
 
         public LocalPackageRepository(string Folder) {
-            Initialize($@"{Folder}", $@"{Folder}/{Environment.ReleasesFileName}");
+            Initialize($@"{Folder}", $@"{Folder}/{EnvironmentHelpers.ReleasesFileName}");
         }
 
         public LocalPackageRepository(string RepositoryFolder, string ReleasesFullPath) {

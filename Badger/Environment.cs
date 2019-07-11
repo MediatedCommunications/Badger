@@ -10,31 +10,6 @@ namespace Badger {
         public static Environment Default { get; private set; } = new DefaultEnvironment();
 
 
-        public const string VersionFolderPrefix = "app-";
-        public const string PackagesSubFolderName = "packages";
-        public const string PackagesSubFolderPath = PackagesSubFolderName;
-
-        public const string InstallIdFileName = ".betaId";
-        public const string ReleasesFileName = "RELEASES";
-
-        public const string TempSubFolderName = "SquirrelTemp";
-        public const string TempSubFolderPath = PackagesSubFolderPath + @"\" + TempSubFolderName;
-
-        protected static bool IsVersionFolder(string FolderName, out Version Version) {
-            var ret = false;
-
-            Version = default(Version);
-
-            if (FolderName.StartsWith(VersionFolderPrefix, StringComparison.InvariantCultureIgnoreCase)) {
-
-                var PotentialVersion = FolderName.Substring(VersionFolderPrefix.Length);
-                ret = Version.TryParse(PotentialVersion, out Version);
-            }
-
-
-            return ret;
-        }
-
         /// <summary>
         /// The version folder would be something like:
         /// C:\Users\TonyValenti\AppData\Local\Clio\app-19.4.25\
@@ -80,7 +55,7 @@ namespace Badger {
                 while (string.IsNullOrEmpty(pret)) {
                     try {
                         var CurrentFolder = System.IO.Path.GetFileName(pret);
-                        if (IsVersionFolder(CurrentFolder, out var Version)) {
+                        if (Badger.EnvironmentHelpers.IsVersionFolder(CurrentFolder, out var Version)) {
                             ret = pret;
                             this.Version = Version;
                             break;
@@ -102,11 +77,11 @@ namespace Badger {
             }
 
             {
-                this.LocalRepositoryFolder = System.IO.Path.Combine(InstallFolder, PackagesSubFolderPath);
+                this.LocalRepositoryFolder = System.IO.Path.Combine(InstallFolder, Badger.EnvironmentHelpers.PackagesSubFolderPath);
             }
 
             {
-                this.TempFolder = System.IO.Path.Combine(InstallFolder, TempSubFolderPath);
+                this.TempFolder = System.IO.Path.Combine(InstallFolder, Badger.EnvironmentHelpers.TempSubFolderPath);
 
                 try {
                     if (System.IO.Directory2.EnsureWritable(TempFolder)) {
@@ -120,7 +95,7 @@ namespace Badger {
 
             {
                 this.InstallIdFolder = LocalRepositoryFolder;
-                this.InstallIdFullPath = System.IO.Path.Combine(InstallIdFolder, InstallIdFileName);
+                this.InstallIdFullPath = System.IO.Path.Combine(InstallIdFolder, Badger.EnvironmentHelpers.InstallIdFileName);
             }
 
         }

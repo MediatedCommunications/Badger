@@ -75,7 +75,7 @@ namespace Badger {
             {
                 if(ReleasesUrl == null) {
                     var Builder = new UriBuilder(RepositoryUrl);
-                    Builder.AppendPath(Environment.ReleasesFileName);
+                    Builder.AppendPath(EnvironmentHelpers.ReleasesFileName);
                     Builder.AppendQuery(Repository_QueryParameters());
 
                     ReleasesUrl = Builder.Uri;
