@@ -21,12 +21,6 @@ namespace Badger.Security {
             }
         }
 
-        public static void Assert(string Expected, string Provided) {
-            if(Expected != Provided) {
-                throw new InvalidSHA1Exception(Expected, Provided);
-            }
-        }
-
 
     }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Badger;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace System.IO {
                     System.IO.File.Delete(FN);
 
                 } catch (Exception ex) {
-
+                    ex.Ignore();
                 }
             }
 
@@ -37,7 +38,7 @@ namespace System.IO {
                     ret = true;
                 }
             } catch (Exception ex) {
-
+                ex.Ignore();
             }
 
             return ret;

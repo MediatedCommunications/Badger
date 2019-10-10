@@ -88,7 +88,7 @@ namespace Badger {
                         TempFolder = System.IO.Path.GetTempPath();
                     }
                 } catch(Exception ex) {
-
+                    ex.Ignore();
                 }
 
             }

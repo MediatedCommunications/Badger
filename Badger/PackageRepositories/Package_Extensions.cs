@@ -19,7 +19,7 @@ namespace Badger {
                     }
                 }
             } catch (Exception ex) {
-
+                ex.Ignore();
             }
 
             return ret;
