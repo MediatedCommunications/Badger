@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <OutputPath>bin\</OutputPath>
+    <LangVersion>latest</LangVersion>
+    <DebugType>full</DebugType>
+    <ApplicationIcon />
+    <StartupObject />
+
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="IconExtractor" Version="1.0.0" />
+    <PackageReference Include="Mono.Options" Version="6.6.0.161" />
+    <PackageReference Include="StringTokenFormatter" Version="4.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Badger.Installer.Default.StubExecutable\Badger.Installer.Default.StubExecutable.csproj" />
+    <ProjectReference Include="..\Badger.Redirector.Default.StubExecutable\Badger.Redirector.Default.StubExecutable.csproj" />
+    <ProjectReference Include="..\Badger\Badger.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Utilities\7Zip\7z.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Utilities\7Zip\7z.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Utilities\7Zip\7z.sfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Utilities\7Zip\7zCon.sfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Utilities\RCEdit\rcedit-x86.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Utilities\RCEdit\readme.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Utilities\SignTool\readme.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Utilities\SignTool\signtool.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

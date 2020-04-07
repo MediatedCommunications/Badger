@@ -1,10 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <AssemblyTitle>Badger.Common</AssemblyTitle>
     <Product>Badger.Common</Product>
     <Copyright>Copyright ©  2019</Copyright>
     <OutputPath>bin\</OutputPath>
     <DebugType>full</DebugType>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>

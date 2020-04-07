@@ -1,4 +1,5 @@
-﻿using Badger.Security;
+﻿using Badger.Diagnostics;
+using Badger.Security;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Badger {
 
-    [DebuggerDisplay(Debugger2.DISPLAY)]
+    [DebuggerDisplay(DebugView.Default)]
     public class CheckForUpdateResponse {
         public Version CurrentVersion { get; set; }
         public Version FutureVersion { get; set; }

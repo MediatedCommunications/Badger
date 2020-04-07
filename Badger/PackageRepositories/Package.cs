@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Badger.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Badger {
 
-    [DebuggerDisplay(Debugger2.DISPLAY)]
+    [DebuggerDisplay(DebugView.Default)]
     public class Package : IDisposable {
         protected string DebuggerDisplay => FileName;
 

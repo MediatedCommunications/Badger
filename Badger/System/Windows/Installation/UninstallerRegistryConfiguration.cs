@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace System.Windows.Installation {
+namespace Badger.Windows.Installation {
     public class UninstallerRegistryConfiguration {
         public string DisplayIcon { get; set; }
         public string DisplayName { get; set; }

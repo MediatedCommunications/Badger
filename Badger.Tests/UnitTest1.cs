@@ -8,8 +8,7 @@ namespace Badger.Tests {
     public class UnitTest1 {
         [TestMethod]
         public void TestMethod1() {
-            Badger.Shell.Shortcuts.Create("The NotePad", System.Environment.SpecialFolder.Desktop, "The best app in the world!", $@"C:\Windows\System32\notepad.exe");
-
+            Badger.Windows.Shell.Shortcuts.Create("The NotePad", System.Environment.SpecialFolder.Desktop, "The best app in the world!", $@"C:\Windows\System32\notepad.exe");
         }
 
         [TestMethod]

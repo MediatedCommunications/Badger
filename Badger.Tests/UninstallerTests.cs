@@ -6,7 +6,7 @@ namespace Badger.Tests {
     public class UninstallerTests {
         [TestMethod]
         public void TestMethod1() {
-            var Default = System.Windows.Installation.UninstallerRegistry.Default;
+            var Default = Badger.Windows.Installation.UninstallerRegistry.Default;
 
             var AllApps = Default.Applications();
 
@@ -15,9 +15,9 @@ namespace Badger.Tests {
 
         [TestMethod]
         public void TestMethod2() {
-            var Default = System.Windows.Installation.UninstallerRegistry.Default;
+            var Default = Badger.Windows.Installation.UninstallerRegistry.Default;
 
-            Default.AddOrUpdate("Custom App", new System.Windows.Installation.UninstallerRegistryConfiguration() {
+            Default.AddOrUpdate("Custom App", new Badger.Windows.Installation.UninstallerRegistryConfiguration() {
                 DisplayIcon = "My Icon",
                 DisplayName = "My Name",
                 DisplayVersion = "1.2.3",

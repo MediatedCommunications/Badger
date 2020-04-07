@@ -41,7 +41,7 @@ namespace Badger {
 
 
         protected virtual string Repository_QueryParameter_InstallId() {
-            return Environment.Default.InstallId?.ToString();
+            return Environment.Default.InstanceId?.ToString();
         }
 
         protected virtual Dictionary<String, String> Repository_QueryParameters() {
