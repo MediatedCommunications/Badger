@@ -11,22 +11,18 @@ namespace Badger.Redirector.Default.StubExecutable {
             var App = System.IO.Path.GetFileName(FullPath);
             var AppFolder = System.IO.Path.GetDirectoryName(FullPath);
 
-            var Folders = new Dictionary<Version, string>();
-            foreach (var Folder in System.IO.Directory.GetDirectories(AppFolder)) {
-                if (Badger.EnvironmentHelpers.IsVersionFolder(Folder, out var V)) {
-                    Folders[V] = Folder;
-                }
-            }
+            var Versions = Badger.VersionFolder.List(AppFolder);
+
 
             var FoundFile = (
-                from x in Folders
-                orderby x.Key descending
-                let Path = GetPathToFile(x.Value, App)
-                where !String.IsNullOrEmpty(Path)
+                from x in Versions
+                orderby x.Version descending
+                let Path = GetPathToFile(x.FullPath, App)
+                where !Path.IsNullOrEmpty()
                 select Path
                 ).FirstOrDefault();
 
-            if (!String.IsNullOrEmpty(FoundFile)) {
+            if (!FoundFile.IsNullOrEmpty()) {
                 try {
                     System.Diagnostics.Process.Start(FoundFile);
                 } catch {

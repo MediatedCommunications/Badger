@@ -8,7 +8,7 @@ namespace Badger.Windows.Shell {
     public static class BadgerFolderExtensions {
 
         public static string Path(this BadgerFolder This, params string[] SubFolders) {
-            var ret = GetFolderPath(This);
+            var ret = Path(This);
             foreach (var item in SubFolders) {
                 ret = System.IO.Path.Combine(ret, item);
             }
@@ -16,7 +16,7 @@ namespace Badger.Windows.Shell {
             return ret;
         }
 
-        public static string GetFolderPath(this BadgerFolder This) {
+        public static string Path(this BadgerFolder This) {
             var ret = default(string);
 
             switch (This) {

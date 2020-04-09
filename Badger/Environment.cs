@@ -58,7 +58,7 @@ namespace Badger {
                 while (!string.IsNullOrEmpty(Start)) {
                     try {
                         var CurrentFolder = System.IO.Path.GetFileName(Start);
-                        if (Badger.EnvironmentHelpers.IsVersionFolder(CurrentFolder, out var V1)) {
+                        if (Badger.VersionFolder.IsVersionFolder(CurrentFolder, out var V1)) {
                             VersionFolder = Start;
                             Version = V1;
                             break;

@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Installer.Default", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Redirector.Default.StubExecutable", "Badger.Redirector.Default.StubExecutable\Badger.Redirector.Default.StubExecutable.csproj", "{2634E2CC-9C67-407F-9368-F8F2CE341A82}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badger.Installer.Default.Utilities.GetIcon", "Badger.Installer.Default.Utilities.GetIcon\Badger.Installer.Default.Utilities.GetIcon.csproj", "{16965E46-917C-49DB-A80D-E8BBB44EDC6B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{2634E2CC-9C67-407F-9368-F8F2CE341A82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2634E2CC-9C67-407F-9368-F8F2CE341A82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2634E2CC-9C67-407F-9368-F8F2CE341A82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16965E46-917C-49DB-A80D-E8BBB44EDC6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16965E46-917C-49DB-A80D-E8BBB44EDC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16965E46-917C-49DB-A80D-E8BBB44EDC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16965E46-917C-49DB-A80D-E8BBB44EDC6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

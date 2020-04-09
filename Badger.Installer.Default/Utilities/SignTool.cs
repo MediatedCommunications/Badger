@@ -14,28 +14,26 @@ namespace Badger.Installer.Default.Utilities {
         public static string FolderPath => Utility.Path(FolderName);
         public static string ExecutablePath => Utility.Path(FolderName, ExecutableName);
 
+        public static string SignParameterTemplateDefault => Utilities.SignTool.SignParameterTemplate($@"{{{nameof(SignAssemblyParameters.Assembly)}}}");
+
         public static string SignParameterTemplate(string FullPath) {
             var ret = $@"sign /a ""{FullPath}""";
 
             return ret;
         }
 
-        public static void Sign(string ExecutablePath, string ParameterTemplate, string File, string Certificate) {
-            Sign(ExecutablePath, ParameterTemplate, new[] { File }, Certificate);
-        }
 
+        public static void Sign(string ExecutablePath, string ParameterTemplate, string Assembly, string Certificate) {
 
-        public static void Sign(string ExecutablePath, string ParameterTemplate, IEnumerable<string> Files, string Certificate) {
-
-            Sign(ExecutablePath, ParameterTemplate, new SignCommandParameters() {
-                Files = Diagnostics.Utility.Quote(Files),
-                Certificate = Diagnostics.Utility.Quote(Certificate)
+            Sign(ExecutablePath, ParameterTemplate, new SignAssemblyParameters() {
+                Assembly = Assembly,
+                Certificate = Certificate
             });
 
         }
 
 
-        public static void Sign(string ExecutablePath, string ParameterTemplate, SignCommandParameters ParameterValues) {
+        public static void Sign(string ExecutablePath, string ParameterTemplate, SignAssemblyParameters ParameterValues) {
 
             Diagnostics.Utility.Run(ExecutablePath, ParameterTemplate, ParameterValues);
 

@@ -6,12 +6,21 @@ using System.Threading.Tasks;
 
 namespace Badger.IO {
     public static class File {
-        public static bool Copy(string Source, string Destination, bool Overwrite) {
-            return Actions.Try(() => System.IO.File.Copy(Source, Destination, Overwrite));
+        public static bool Copy(string Source, string Destination, bool Overwrite, out Exception ex) {
+            return Actions.Try(() => System.IO.File.Copy(Source, Destination, Overwrite), out ex);
         }
 
-        public static bool Replace(string Source, string Destination) {
-            return Copy(Source, Destination, true);
+        public static bool Replace(string Source, string Destination, out Exception ex) {
+            return Copy(Source, Destination, true, out ex);
+        }
+        public static bool Delete(string Location, out Exception ex) {
+            return Actions.Try(() => {
+
+                if (Exists(Location)) {
+                    System.IO.File.Delete(Location) ;
+                }
+
+            }, out ex);
         }
 
         public static bool Exists(string Source) {

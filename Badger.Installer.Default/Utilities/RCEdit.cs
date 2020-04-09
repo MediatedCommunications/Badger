@@ -19,31 +19,8 @@ namespace Badger.Installer.Default.Utilities {
 
     public static partial class RCEdit {
         public static partial class Icons {
-            public static string Get(string Path) {
-                //return Icon.ExtractAssociatedIcon(Path);
-                var FileName = System.IO.Path.GetTempFileName();
-                using (var Output = System.IO.File.OpenWrite(FileName)) {
-                    Toolbelt.Drawing.IconExtractor.Extract1stIconTo(Path, Output);
-                }
-
-                return FileName;
-
-
-            }
-
-            private static string SetParameters(string Path, string PathToIcon) {
-                var ret = $@"""{Path}"" --set-icon ""{PathToIcon}""";
-                return ret;
-            }
-
-            public static void Set(string Path, string PathToIcon) {
-                Diagnostics.Utility.Run(ExecutablePath, SetParameters(Path, PathToIcon));
-            }
-
-            public static void Copy(string SourcePath, string DestPath) {
-                var Icon = Get(SourcePath);
-                Set(DestPath, Icon);
-            }
+            public static string SetParameterTemplate => $@"""{{{nameof(SetFileIconParameters.Dest_File)}}}"" --set-icon ""{{{nameof(SetFileIconParameters.Source_File)}}}""";
+          
 
         }
     }
@@ -51,7 +28,8 @@ namespace Badger.Installer.Default.Utilities {
     public static partial class RCEdit {
         public static partial class VersionStrings {
 
-            private static string[] Default = new[] {
+            
+            public static string[] Default = new[] {
                 "CompanyName",
                 "LegalCopyright",
                 "FileDescription",
@@ -65,58 +43,8 @@ namespace Badger.Installer.Default.Utilities {
 
             private static string InvalidVersionString => "Fatal error: Unable to get version string";
 
-
-            public static IDictionary<string, string> Get(string Path, IEnumerable<string> VersionStrings) {
-                var ret = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-                foreach (var item in VersionStrings) {
-
-                    if (Get(Path, item) is { } V1) {
-                        ret[item] = V1;
-                    }
-                }
-
-                return ret;
-            }
-
-            public static IDictionary<string, string> Get(string Path) {
-                return Get(Path, Default);
-            }
-
-            private static string GetParameters(string Path, string Key) {
-                var ret = $@"""{Path}"" --get-version-string {Key}";
-                return ret;
-            }
-
-            public static string Get(string Path, string Key) {
-                var P = Diagnostics.Utility.Run(ExecutablePath, GetParameters(Path, Key));
-                var ret = P.StandardOutput.ReadToEnd();
-
-                return ret;
-            }
-
-            public static string SetParameters(string Path, IDictionary<string, string> VersionStrings) {
-                var ret = $@"""{Path}""";
-
-                foreach (var item in VersionStrings) {
-                    ret += $@" --set-version-string ""{item.Key}"" ""{item.Value}""";
-                }
-
-                return ret;
-            }
-
-            public static void Set(string Path, IDictionary<string, string> VersionStrings) {
-                Diagnostics.Utility.Run(ExecutablePath, SetParameters(Path, VersionStrings));
-            }
-
-            public static void Copy(string SourcePath, string DestinationPath) {
-                Copy(SourcePath, DestinationPath, Default);
-            }
-
-            public static void Copy(string SourcePath, string DestinationPath, IEnumerable<string> VersionStrings) {
-                var Values = Get(SourcePath, VersionStrings);
-                Set(DestinationPath, Values);
-
-            }
+            public static string GetParametersTemplate => $@"""{{{nameof(GetVersionStringParameters.Source_File)}}}"" --get-version-string {{{nameof(GetVersionStringParameters.Key)}}}";
+            public static string SetParametersTemplate => $@"""{{{nameof(SetVersionStringParameters.Dest_File)}}}"" --set-version-string ""{{{nameof(SetVersionStringParameters.Key)}}}"" ""{{{nameof(SetVersionStringParameters.Value)}}}""";
 
 
         }

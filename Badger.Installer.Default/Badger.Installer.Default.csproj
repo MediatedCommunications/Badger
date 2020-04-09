@@ -14,12 +14,12 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="IconExtractor" Version="1.0.0" />
     <PackageReference Include="Mono.Options" Version="6.6.0.161" />
     <PackageReference Include="StringTokenFormatter" Version="4.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Badger.Installer.Default.StubExecutable\Badger.Installer.Default.StubExecutable.csproj" />
+    <ProjectReference Include="..\Badger.Installer.Default.Utilities.GetIcon\Badger.Installer.Default.Utilities.GetIcon.csproj" />
     <ProjectReference Include="..\Badger.Redirector.Default.StubExecutable\Badger.Redirector.Default.StubExecutable.csproj" />
     <ProjectReference Include="..\Badger\Badger.csproj" />
   </ItemGroup>

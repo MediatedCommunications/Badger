@@ -11,7 +11,7 @@ namespace Badger.Installer {
         public bool Install_Location_Clean { get; set; }
         public string Install_Content_ParameterTemplate { get; set; }
 
-        public List<InstallScript> Install_Location_Scripts { get; private set; } = new List<InstallScript>();
+        public List<ExternalToolConfiguration> Install_Location_Scripts { get; private set; } = new List<ExternalToolConfiguration>();
 
     }
 

@@ -9,10 +9,14 @@ using System.Threading.Tasks;
 namespace Badger.IO {
     public class Directory {
 
-        public static bool Create(string Directory) {
+        public static bool Create(string Directory) => Create(Directory, out _);
+
+        public static bool Create(string Directory, out Exception ex) {
+            ex = default;
+
             var ret = true;
             if (!Exists(Directory)) {
-                ret &= Actions.Try(() => System.IO.Directory.CreateDirectory(Directory));
+                ret &= Actions.Try(() => System.IO.Directory.CreateDirectory(Directory), out ex);
             }
             return ret;
         }
@@ -21,22 +25,43 @@ namespace Badger.IO {
             return System.IO.Directory.Exists(Directory);
         }
 
-        public static bool Delete(string Path, bool Recursive = true) {
+        public static bool Delete(string Path) {
+            return Delete(Path, true);
+        }
+
+        public static bool Delete(string Path, bool Recursive) {
+            return Delete(Path, Recursive, out _);
+        }
+
+        public static bool Delete(string Path, out Exception ex) {
+            return Delete(Path, true, out ex);
+        }
+
+        public static bool Delete(string Path, bool Recursive, out Exception ex) {
+            ex = default;
+
             var ret = true;
 
             if (System.IO.Directory.Exists(Path)) {
 
                 if (Recursive) {
                     foreach (var item in System.IO.Directory.GetFiles(Path)) {
-                        ret &= Actions.Try(() => System.IO.File.Delete(item));
+                        var tret = Actions.Try(() => System.IO.File.Delete(item), out var exx);
+                        ret &= tret;
+                        ex ??= exx;
                     }
 
                     foreach (var item in System.IO.Directory.GetDirectories(Path)) {
-                        ret &= Delete(item);
+                        var tret = Delete(item, Recursive, out var exx);
+                        ret &= tret;
+                        ex ??= exx;
                     }
                 }
-
-                ret &= Actions.Try(() => System.IO.Directory.Delete(Path));
+                {
+                    var tret = Actions.Try(() => System.IO.Directory.Delete(Path), out var exx);
+                    ret &= tret;
+                    ex ??= exx;
+                }
             }
 
             return ret;
@@ -76,7 +101,13 @@ namespace Badger.IO {
             return ret;
         }
 
-        public static bool Copy(string SourcePath, string DestPath, bool Overwrite = true, bool Recursive = true) {
+        public static bool Copy(string SourcePath, string DestPath, out Exception ex) {
+            return Copy(SourcePath, DestPath, true, true, out ex);
+        }
+
+        public static bool Copy(string SourcePath, string DestPath, bool Overwrite, bool Recursive, out Exception ex) {
+            ex = default(Exception);
+
             var ret = true;
 
             if (Exists(SourcePath)) {
@@ -86,7 +117,9 @@ namespace Badger.IO {
                         var SourceName = System.IO.Path.GetFileName(FileName);
                         var Dest = System.IO.Path.Combine(DestPath, SourceName);
 
-                        ret &= File.Copy(FileName, Dest, Overwrite);
+                        var tret = File.Copy(FileName, Dest, Overwrite, out var exx);
+                        ret &= tret;
+                        ex ??= exx;
                     }
                 }
 
@@ -95,10 +128,15 @@ namespace Badger.IO {
                     foreach (var Folder in Folders) {
                         var SourceName = System.IO.Path.GetFileName(Folder);
                         var Dest = System.IO.Path.Combine(DestPath, SourceName);
-                        Create(Dest);
+                        {
+                            var tret = Create(Dest);
+                            ret &= tret;
+                        }
 
                         if (Recursive) {
-                            Copy(Folder, Dest, Overwrite, Recursive);
+                            var tret = Copy(Folder, Dest, Overwrite, Recursive, out var exx);
+                            ret &= tret;
+                            ex ??= exx;
                         }
                     }
                 }

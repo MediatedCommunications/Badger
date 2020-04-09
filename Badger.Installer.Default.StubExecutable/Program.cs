@@ -1,13 +1,15 @@
 ﻿using Badger.Diagnostics;
 using Badger.Management;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+
+using static Badger.Diagnostics.Log;
 
 namespace Badger.Installer.Default.StubExecutable {
     public static class Program {
@@ -15,6 +17,10 @@ namespace Badger.Installer.Default.StubExecutable {
 
         [STAThread]
         static async Task Main(string[] args) {
+            Badger.Diagnostics.Logging.ApplySimpleConfiguation();
+
+            var Logger = log4net.LogManager.GetLogger("Installer");
+
             var Config = Badger.Installer.ConfigurationResource.Get();
 
             SplashScreen.StartThread(Config);
@@ -24,7 +30,13 @@ namespace Badger.Installer.Default.StubExecutable {
                 if (Config.Install_Subfolder is { } Subfolder) {
                     var Root = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
                     var InstallLocation = System.IO.Path.Combine(Root, Subfolder);
-                    var VersionFolder = System.IO.Path.Combine(InstallLocation, EnvironmentHelpers.VersionFolderName(Config.Package_Version));
+                    var VersionFolder = System.IO.Path.Combine(InstallLocation, Badger.VersionFolder.Name(Config.Package_Version));
+
+                    var PreviousVersion = (
+                        from x in Badger.VersionFolder.List(InstallLocation)
+                        orderby x.Version descending
+                        select x.Version
+                        ).FirstOrDefault();
 
                     var CurrentEnvironment = Badger.Environment.FromFolder(VersionFolder);
                     var CurrentInstanceId = CurrentEnvironment.InstanceId;
@@ -33,11 +45,11 @@ namespace Badger.Installer.Default.StubExecutable {
                     await Install_Location_Clean(Config, InstallLocation);
                     await Install_Content_Deploy(Config, InstallLocation);
 
-                    await Install_Package_Preserve(Config, CurrentEnvironment.LocalRepositoryFolder);
+                    await Install_Package_Preserve(Config, CurrentEnvironment.LocalRepositoryFolder, Logger);
 
                     CurrentEnvironment.InstanceId = CurrentInstanceId;
 
-                    Config.Install_Location_Scripts.Run(VersionFolder);
+                    Config.Install_Location_Scripts.Run(VersionFolder, PreviousVersion, Config.Package_Version);
 
                 }
 
@@ -114,8 +126,8 @@ namespace Badger.Installer.Default.StubExecutable {
                 var Writer = System.IO.File.OpenWrite(TempFile);
                 Content.CopyTo(Writer);
                 Writer.Close();
-                var ParameterValues = new ExtractParameters() {
-                    Location = InstallLocation
+                var ParameterValues = new ExtractArchiveParameters() {
+                    Dest_Folder = InstallLocation
                 };
 
                 Utility.Run(TempFile, Config.Install_Content_ParameterTemplate, ParameterValues);
@@ -124,12 +136,13 @@ namespace Badger.Installer.Default.StubExecutable {
             return Task.CompletedTask;
         }
 
-        public static Task Install_Package_Preserve(Configuration Config, string LocalRepositoryFolder) {
-            var SourceFile = System.Reflection.Assembly.GetEntryAssembly().Location;
-            var DestFile = System.IO.Path.Combine(LocalRepositoryFolder, System.IO.Path.GetFileName(SourceFile));
-            Badger.IO.Directory.Create(LocalRepositoryFolder);
-            Badger.IO.File.Replace(SourceFile, DestFile);
+        public static Task Install_Package_Preserve(Configuration Config, string LocalRepositoryFolder, ILog Logger) {
+            var OriginalInstaller = System.Reflection.Assembly.GetEntryAssembly().Location;
+            var DestFile = System.IO.Path.Combine(LocalRepositoryFolder, System.IO.Path.GetFileName(OriginalInstaller));
 
+            Folder.Create(nameof(LocalRepositoryFolder), LocalRepositoryFolder, Logger);
+            File.Copy(nameof(OriginalInstaller), OriginalInstaller, nameof(LocalRepositoryFolder), DestFile, Logger);
+            
             return Task.CompletedTask;
         }
 

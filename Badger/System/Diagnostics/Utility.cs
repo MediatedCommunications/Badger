@@ -11,26 +11,18 @@ namespace Badger.Diagnostics {
     public static class Utility {
 
 
-        public static string Quote(params string[] Values) {
-            return Quote((IEnumerable<string>)Values);
-        }
-
-        public static string Quote(IEnumerable<string> Values) {
-            var ret =
-                string.Join(" ",
-                from x in Values
-                select $@"""{x}"""
-                );
-
-            return ret;
-        }
 
         public static Process Run<T>(string FullPath, string ArgumentTemplate, T ArgumentValues, CancellationToken? ctoken = default) {
-            var NewArguments = ArgumentTemplate.FormatToken(ArgumentValues);
-            return Run(FullPath, NewArguments, ctoken);
+            var PSI = Prepare(FullPath, ArgumentTemplate, ArgumentValues);
+            return Run(PSI);
         }
 
-        public static Process Run(string FullPath, string Arguments, CancellationToken? ctoken = default) {
+        public static ProcessStartInfo Prepare<T>(string FullPath, string ArgumentTemplate, T ArgumentValues) {
+            var NewArguments = ArgumentTemplate.FormatToken(ArgumentValues);
+            return Prepare(FullPath, NewArguments);
+        }
+
+        public static ProcessStartInfo Prepare(string FullPath, string Arguments) {
             var PSI = new ProcessStartInfo() {
                 FileName = FullPath,
                 Arguments = Arguments,
@@ -46,8 +38,9 @@ namespace Badger.Diagnostics {
                 UseShellExecute = false,
             };
 
-            return Run(PSI, ctoken);
+            return PSI;
         }
+
 
         public static Process Run(ProcessStartInfo PSI, CancellationToken? ctoken = default) {
             var token = ctoken ?? CancellationToken.None;
