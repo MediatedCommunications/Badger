@@ -7,13 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger", "Badger\Badger.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Tests", "Badger.Tests\Badger.Tests.csproj", "{BD68E23E-7E2C-4AB3-9C44-3F0A6DB02828}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Installer.Default.StubExecutable", "Badger.Installer.Default.StubExecutable\Badger.Installer.Default.StubExecutable.csproj", "{7D352708-76B6-4675-9BB2-9884DE2BBD0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Default.Installer.StubExecutable", "Badger.Default.Installer.StubExecutable\Badger.Default.Installer.StubExecutable.csproj", "{B2C43A66-3942-4B80-8FFB-61C54BA7F103}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Installer.Default", "Badger.Installer.Default\Badger.Installer.Default.csproj", "{92533654-6873-46EB-8264-AA17D2A9A41E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Default.Packager", "Badger.Default.Packager\Badger.Default.Packager.csproj", "{8E8B5C91-8218-411B-8837-F5D329874C0F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Redirector.Default.StubExecutable", "Badger.Redirector.Default.StubExecutable\Badger.Redirector.Default.StubExecutable.csproj", "{2634E2CC-9C67-407F-9368-F8F2CE341A82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badger.Default.Packager.Utilities.GetIcon", "Badger.Default.Packager.Utilities.GetIcon\Badger.Default.Packager.Utilities.GetIcon.csproj", "{16965E46-917C-49DB-A80D-E8BBB44EDC6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badger.Installer.Default.Utilities.GetIcon", "Badger.Installer.Default.Utilities.GetIcon\Badger.Installer.Default.Utilities.GetIcon.csproj", "{16965E46-917C-49DB-A80D-E8BBB44EDC6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Default.Redirector.StubExecutable", "Badger.Default.Redirector.StubExecutable\Badger.Default.Redirector.StubExecutable.csproj", "{898D5297-C686-473F-9F21-0A4F67E22B28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badger.Default.Uninstaller.StubExecutable", "Badger.Default.Uninstaller.StubExecutable\Badger.Default.Uninstaller.StubExecutable.csproj", "{C728C991-B3B1-4754-8481-2FEFDE04DEA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,22 +31,26 @@ Global
 		{BD68E23E-7E2C-4AB3-9C44-3F0A6DB02828}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD68E23E-7E2C-4AB3-9C44-3F0A6DB02828}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD68E23E-7E2C-4AB3-9C44-3F0A6DB02828}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D352708-76B6-4675-9BB2-9884DE2BBD0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D352708-76B6-4675-9BB2-9884DE2BBD0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D352708-76B6-4675-9BB2-9884DE2BBD0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D352708-76B6-4675-9BB2-9884DE2BBD0D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{92533654-6873-46EB-8264-AA17D2A9A41E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92533654-6873-46EB-8264-AA17D2A9A41E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92533654-6873-46EB-8264-AA17D2A9A41E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{92533654-6873-46EB-8264-AA17D2A9A41E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2634E2CC-9C67-407F-9368-F8F2CE341A82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2634E2CC-9C67-407F-9368-F8F2CE341A82}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2634E2CC-9C67-407F-9368-F8F2CE341A82}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2634E2CC-9C67-407F-9368-F8F2CE341A82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2C43A66-3942-4B80-8FFB-61C54BA7F103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2C43A66-3942-4B80-8FFB-61C54BA7F103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2C43A66-3942-4B80-8FFB-61C54BA7F103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2C43A66-3942-4B80-8FFB-61C54BA7F103}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E8B5C91-8218-411B-8837-F5D329874C0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E8B5C91-8218-411B-8837-F5D329874C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E8B5C91-8218-411B-8837-F5D329874C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E8B5C91-8218-411B-8837-F5D329874C0F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{16965E46-917C-49DB-A80D-E8BBB44EDC6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{16965E46-917C-49DB-A80D-E8BBB44EDC6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16965E46-917C-49DB-A80D-E8BBB44EDC6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16965E46-917C-49DB-A80D-E8BBB44EDC6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{898D5297-C686-473F-9F21-0A4F67E22B28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{898D5297-C686-473F-9F21-0A4F67E22B28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{898D5297-C686-473F-9F21-0A4F67E22B28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{898D5297-C686-473F-9F21-0A4F67E22B28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C728C991-B3B1-4754-8481-2FEFDE04DEA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C728C991-B3B1-4754-8481-2FEFDE04DEA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C728C991-B3B1-4754-8481-2FEFDE04DEA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C728C991-B3B1-4754-8481-2FEFDE04DEA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

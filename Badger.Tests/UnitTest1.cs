@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Badger.Deployment.Servicing;
+using Badger.Deployment.Servicing.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Badger.Tests {
@@ -13,7 +15,7 @@ namespace Badger.Tests {
 
         [TestMethod]
         public async Task TestDownload() {
-            var Repo = new Badger.HttpPackageRepository("http://Get.FasterLaw.com/AlphaDrive/Windows/Stable");
+            var Repo = new HttpPackageRepository("http://Get.FasterLaw.com/AlphaDrive/Windows/Stable");
             var Update = await Repo.CheckForUpdate();
             var Entries = await Repo.AvailablePackages();
             var ToDownload = Entries.FirstOrDefault();

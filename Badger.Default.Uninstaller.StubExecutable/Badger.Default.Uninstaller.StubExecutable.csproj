@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <UseWpf>true</UseWpf>
+    <OutputPath>bin\</OutputPath>
+    <LangVersion>latest</LangVersion>
+    <DebugType>full</DebugType>
+    <ApplicationIcon />
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Badger\Badger.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <ILMergeInternalize>true</ILMergeInternalize>
+    <ILMergeCopyAttributes>true</ILMergeCopyAttributes>
+  </PropertyGroup>
+
+</Project>
