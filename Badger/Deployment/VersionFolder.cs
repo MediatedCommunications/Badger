@@ -9,6 +9,12 @@ namespace Badger.Deployment {
         public string FullPath { get; private set; }
         public Version Version { get; private set; }
 
+        public VersionFolder(string FullPath, Version Version) {
+            this.FullPath = FullPath;
+            this.Version = Version;
+        }
+
+
         public const string VersionFolderPrefix = "app-";
 
         public static string Name(Version ForVersion) {
@@ -16,29 +22,46 @@ namespace Badger.Deployment {
             return ret;
         }
 
-        public static Version IsVersionFolder(string FolderName) {
-            var ret = default(Version);
+        public static VersionFolder Parse(string FolderPath) {
+            var ret = default(VersionFolder);
 
-            if (IsVersionFolder(FolderName, out var V1)) {
-                ret = V1;
-            }
-
-            return ret;
-        }
-
-        public static bool IsVersionFolder(string FolderName, out Version Version) {
-            var ret = false;
-
-            Version = default(Version);
+            var FolderName = System.IO.Path.GetFileName(FolderPath);
 
             if (FolderName.StartsWith(VersionFolderPrefix, StringComparison.InvariantCultureIgnoreCase)) {
 
                 var PotentialVersion = FolderName.Substring(VersionFolderPrefix.Length);
-                ret = Version.TryParse(PotentialVersion, out Version);
+                if(Version.TryParse(PotentialVersion, out var V1)) {
+                    ret = new VersionFolder(FolderPath, V1);
+                }
             }
 
             return ret;
         }
+
+        public static VersionFolder Find(string FolderPath) {
+            var ret = default(VersionFolder);
+
+            var PathToCheck = FolderPath;
+
+            while (PathToCheck.IsNotNullOrEmpty() && ret == default) {
+                try {
+                    if(VersionFolder.Parse(PathToCheck) is { } V1) {
+                        ret = V1;
+                    } else {
+                        PathToCheck = System.IO.Path.GetDirectoryName(PathToCheck);
+                    }
+                } catch (Exception ex) {
+                    ex.Ignore();
+                    break;
+                }
+            }
+
+            return ret;
+        }
+
+
+
+        
 
         public static List<VersionFolder> List(string Folder) {
             var ret = new List<VersionFolder>();
@@ -46,12 +69,10 @@ namespace Badger.Deployment {
                 if (Directory.Exists(Folder)) {
                     ret = (
                         from x in Directory.GetDirectories(Folder)
-                        let Version = IsVersionFolder(x)
+                        let Version = VersionFolder.Parse(x)
                         where Version is { }
-                        select new VersionFolder() {
-                            Version = Version,
-                            FullPath = x
-                        }).ToList();
+                        select Version
+                        ).ToList();
                 }
             });
 

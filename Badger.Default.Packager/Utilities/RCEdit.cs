@@ -1,4 +1,5 @@
-﻿using Badger.Default.Installer;
+﻿using Badger.Default.Configuration;
+using Badger.Default.Installer;
 
 namespace Badger.Default.Packager.Utilities.RcEdit {
     public static partial class CommandLine {

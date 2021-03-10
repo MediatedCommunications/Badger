@@ -14,6 +14,29 @@ namespace Badger.Common {
             return !String.IsNullOrEmpty(This);
         }
 
+        public static bool IsBlank(this string This) {
+            return string.IsNullOrWhiteSpace(This);
+        }
+
+        public static bool IsNotBlank(this string This) {
+            return !string.IsNullOrWhiteSpace(This);
+        }
+
+        public static string Join(this IEnumerable<string> This, string Separator) {
+            var Query = This.Where(x => x.IsNotNullOrEmpty());
+            
+            var ret = string.Join(Separator, Query);
+
+            return ret;
+        }
+
+        public static string JoinSpace(this IEnumerable<string> This) {
+            return This.Join(" ");
+        }
+        public static string JoinDot(this IEnumerable<string> This) {
+            return This.Join(".");
+        }
+
     }
 
 }

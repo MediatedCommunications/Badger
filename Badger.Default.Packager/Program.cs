@@ -1,4 +1,6 @@
-﻿using Badger.Default.Installer;
+﻿using Badger.Common.Serialization;
+using Badger.Default.Configuration;
+using Badger.Default.Installer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,14 +9,12 @@ using System.Linq;
 using System.Text;
 
 namespace Badger.Default.Packager {
+
     public static class Program {
         
-        public static void Main(string[] args) {
-            Badger.Common.Diagnostics.Logging.ApplySimpleConfiguation();
 
-            var Configuration = Defaults.Configuration();
-
-            var MyConfiguration = new PackagerConfiguration() {
+        private static PackagerConfiguration MyConfig() {
+            var ret = new PackagerConfiguration() {
                 Defaults = new DefaultsConfiguration {
                     SignUsing = new SigningConfiguration {
                         Certificate = @"C:\Users\TonyValenti\source\repos\MediatedCommunications\AlphaDrive\ASSEMBLIES\__CODESIGNINGCERTIFICATES\mediated_communications_inc.pfx",
@@ -24,26 +24,24 @@ namespace Badger.Default.Packager {
                 Product = new ProductConfiguration {
                     Name = "Faster Suite",
                     Version = new Version(3, 2, 1),
+                    Publisher = "Mediated Communications",
+                    Code = "Clio",
                 },
 
                 Installer = new InstallerConfiguration {
                     Content = new InstallerContentConfiguration() {
-                        Include = true,
                         Source = $@"C:\Users\TonyValenti\source\repos\MediatedCommunications\AlphaDrive\__BUILD\Current",
                     },
                     Icon = new InstallerContentConfiguration() {
-                        Include = true,
-                        Source = $@"C:\Users\TonyValenti\source\repos\MediatedCommunications\AlphaDrive\__BUILD\Current\FasterSuite.Windows.x86.exe"
+                        Source = $@"C:\Users\TonyValenti\source\repos\MediatedCommunications\AlphaDrive\__BUILD\Current\FasterSuite.Windows.x32.exe"
                     },
                     SplashScreen = new InstallerContentConfiguration() {
-                        Include = true,
                         Source = @"C:\Users\TonyValenti\source\repos\MediatedCommunications\AlphaDrive\FasterSuite.Windows.Package\InstallerResources\LoadingGif-assets\LoadingGif.gif"
                     },
                     Playbook = new InstallerContentPlaybookConfiguration {
                         ExtractContentToSubfolder = "Clio",
                         Scripts = new List<ExternalToolConfiguration> {
                             new ExternalToolConfiguration() {
-                                Enabled = true,
                                 Application = "FasterSuite.Windows.exe",
                                 Visible = true,
                                 Async = true,
@@ -53,15 +51,24 @@ namespace Badger.Default.Packager {
                 },
 
                 Output = new OutputConfiguration() {
-                    Path_NameTemplate = $@"C:\Users\TonyValenti\source\repos\MediatedCommunications\Badger\Badger.Installer.Default.StubExecutable\bin\net472"
+                    Path_NameTemplate = $@"C:\Users\TonyValenti\source\repos\MediatedCommunications\Badger\Badger.Default.Installer.StubExecutable\bin\net472"
                 }
-
             };
 
-            Configuration = Configurations.Coalesce(MyConfiguration, Configuration);
+            return ret;
+        }
+
+        public static void Main(string[] args) {
+            Badger.Common.Diagnostics.Logging.ApplySimpleConfiguation();
 
 
 
+            var Configurations = new List<PackagerConfiguration>() {
+                MyConfig(),
+                MyConfig().WithDefaults(),
+                Defaults.Configuration(),
+
+            };
 
             var Parser = new Mono.Options.OptionSet() {
                 {
@@ -69,8 +76,10 @@ namespace Badger.Default.Packager {
                     "Specify a json file to load packaging options from",
                     x => { 
                         try {
-                            var Instance = EasyJsonSerializer.Instance.FromFile<PackagerConfiguration>(x);
-                            Configuration = Configurations.Coalesce(Instance, Configuration);
+                            var Instance = Badger.Common.Serialization.EasyJsonSerializer.Instance.FromFile<PackagerConfiguration>(x);
+                            var Defaults = Instance.WithDefaults();
+
+                            Configurations.InsertRange(0, new[]{Instance, Defaults });
 
                         } catch (Exception ex) {
 
@@ -82,7 +91,9 @@ namespace Badger.Default.Packager {
                     "create-package",
                     "create the package specified by all the options",
                     x => {
-                        Configuration.Configuration();
+                        var Config = ConfigurationMerger.Many((x,y)=>ConfigurationMerger.Merge(x,y), Configurations);
+
+                        Config.InvokeConfiguration();
                     }
                 },
                 {
@@ -97,7 +108,9 @@ namespace Badger.Default.Packager {
                     "Specify a json file to save packaging options to.",
                     x => { 
                         try {
-                            EasyJsonSerializer.Instance.ToFile(Configuration, x);
+                            var Config = ConfigurationMerger.Many((x,y)=>ConfigurationMerger.Merge(x,y), Configurations);
+
+                            EasyJsonSerializer.Instance.ToFile(Config, x);
                         } catch (Exception ex) {
 
                         }
@@ -107,7 +120,8 @@ namespace Badger.Default.Packager {
 
 
             args = new[] {
-                $@"-to-json=C:\Users\TonyValenti\Documents\test.json"
+                $@"-to-json=C:\Users\TonyValenti\Documents\test.json",
+                $@"-create-package"
             };
 
             var F = Parser.Parse(args);

@@ -1,4 +1,5 @@
-﻿using Badger.Default.Installer;
+﻿using Badger.Default.Configuration;
+using Badger.Default.Installer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Badger.Default.Packager.Utilities.GetIcon {
 
                 var Parser = new Mono.Options.OptionSet() { 
                     {
-                        $@"{nameof(Installer.GetFileIconParameters.Source_File)}=",
+                        $@"{nameof(GetFileIconParameters.Source_File)}=",
                         "The full path to the executable that will be used for signing executables.",
                         x => {
                             Options.Source_File = x;
@@ -26,7 +27,7 @@ namespace Badger.Default.Packager.Utilities.GetIcon {
                     },
 
                     {
-                        $@"{nameof(Installer.GetFileIconParameters.Dest_File)}=",
+                        $@"{nameof(GetFileIconParameters.Dest_File)}=",
                         "The full path to the executable that will be used for signing executables.",
                         x => {
                             Options.Dest_File = x;
@@ -54,7 +55,7 @@ namespace Badger.Default.Packager.Utilities.GetIcon {
 
         public static void ExtractTo(string Source, string Destination) {
 
-            using (var Output = System.IO.File.OpenWrite(Destination)) {
+            using (var Output = System.IO.File.Create(Destination)) {
                 Toolbelt.Drawing.IconExtractor.Extract1stIconTo(Source, Output);
             }
 

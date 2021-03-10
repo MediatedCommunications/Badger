@@ -9,16 +9,30 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Badger.Windows.Installation {
+
+    public enum CanModifyValue : long {
+        Default = True,
+        True = 0,
+        False = 1
+    }
+
+    public enum CanRepairValue : long {
+        Default = False,
+        True = 0,
+        False = 1,
+    }
+
+
     public class UninstallerRegistryConfiguration {
         public string DisplayIcon { get; set; }
         public string DisplayName { get; set; }
         public string DisplayVersion { get; set; }
-        public long? EstimatedSize { get; set; }
+        public long? EstimatedSizeInKb { get; set; }
         public DateTime? InstallDate { get; set; }
         public string InstallLocation { get; set; }
         public long? Language { get; set; }
-        public long? NoModify { get; set; }
-        public long? NoRepair { get; set; }
+        public CanModifyValue? CanModify { get; set; }
+        public CanRepairValue? CanRepair { get; set; }
         public string Publisher { get; set; }
         public string QuietUninstallString { get; set; }
         public string UninstallString { get; set; }
@@ -71,7 +85,7 @@ namespace Badger.Windows.Installation {
             var ret = "";
 
             try {
-                ret = (Key.GetValue(Name) ?? "").ToString();
+                ret = (Key?.GetValue(Name) ?? "").ToString();
             } catch { }
 
             return ret;
@@ -81,13 +95,27 @@ namespace Badger.Windows.Installation {
             var ret = default(long?);
 
             try {
-                if(Key.GetValue(Name) is long V) {
+                if(Key?.GetValue(Name) is long V) {
                     ret = V;
                 }
             } catch { }
 
             return ret;
         }
+
+        private T? GetEnum<T>(RegistryKey Key, string Name) where T:struct {
+            var ret = default(T?);
+
+            try {
+                if (GetLong(Key, Name) is { } V1) {
+                    ret = (T)(object)V1;
+                }
+            } catch { 
+            }
+
+            return ret;
+        }
+
 
         private string DateFormat = "yyyyMMdd";
         private DateTime? GetDate(RegistryKey Key, string Name) {
@@ -101,6 +129,15 @@ namespace Badger.Windows.Installation {
             } catch { }
 
             return ret;
+        }
+
+        public IEnumerable<UninstallerRegistryConfiguration> List() {
+            var Apps = Applications();
+            foreach (var item in Apps) {
+                if(Get(item) is { } V1){
+                    yield return V1;
+                }
+            }
         }
 
         public UninstallerRegistryConfiguration Get(string Application) {
@@ -119,10 +156,10 @@ namespace Badger.Windows.Installation {
                                 QuietUninstallString = GetString(Key3, "QuietUninstallString"),
                                 UninstallString = GetString(Key3, "UninstallString"),
                                 URLUpdateInfo = GetString(Key3, "URLUpdateInfo"),
-                                EstimatedSize = GetLong(Key3, "EstimatedSize"),
+                                EstimatedSizeInKb = GetLong(Key3, "EstimatedSize"),
                                 Language = GetLong(Key3, "Language"),
-                                NoModify = GetLong(Key3, "NoModify"),
-                                NoRepair = GetLong(Key3, "NoRepair"),
+                                CanModify = (CanModifyValue?) GetLong(Key3, "NoModify"),
+                                CanRepair = (CanRepairValue?) GetLong(Key3, "NoRepair"),
                                 InstallDate = GetDate(Key3, "InstallDate"),
                             };
                             
@@ -133,7 +170,9 @@ namespace Badger.Windows.Installation {
                     }
                 }
 
-            } catch { }
+            } catch (Exception ex) {
+                ex.Ignore();
+            }
 
 
             return ret;
@@ -145,12 +184,12 @@ namespace Badger.Windows.Installation {
                 ["DisplayIcon"] = Configuration.DisplayIcon,
                 ["DisplayName"] = Configuration.DisplayName,
                 ["DisplayVersion"] = Configuration.DisplayVersion,
-                ["EstimatedSize"] = Configuration.EstimatedSize,
+                ["EstimatedSize"] = Configuration.EstimatedSizeInKb,
                 ["InstallDate"] = Configuration.InstallDate?.ToString(DateFormat),
                 ["InstallLocation"] = Configuration.InstallLocation,
                 ["Language"] = Configuration.Language,
-                ["NoModify"] = Configuration.NoModify,
-                ["NoRepair"] = Configuration.NoRepair,
+                ["NoModify"] = Configuration.CanModify,
+                ["NoRepair"] = Configuration.CanRepair,
                 ["Publisher"] = Configuration.Publisher,
                 ["QuietUninstallString"] = Configuration.QuietUninstallString,
                 ["UninstallString"] = Configuration.UninstallString,
@@ -164,10 +203,12 @@ namespace Badger.Windows.Installation {
                             var Name = item.Key;
                             var Value = item.Value;
                             if(Value == null) {
-                                Key3.DeleteValue(Name, false);
+                                if (DeleteNullValues) {
+                                    Key3.DeleteValue(Name, false);
+                                }
                             } else if (Value is string) {
                                 Key3.SetValue(Name, Value, RegistryValueKind.String);
-                            } else if (Value is long) {
+                            } else if (Value is long || Value is CanRepairValue || Value is CanModifyValue) {
                                 Key3.SetValue(Name, Value, RegistryValueKind.DWord);
                             }
                             

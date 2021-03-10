@@ -28,7 +28,7 @@ namespace Badger.Windows.Shell {
                     ret = System.Environment.SpecialFolder.ApplicationData.Path("Microsoft", "Internet Explorer", "Quick Launch", "User Pinned", "TaskBar");
                     break;
                 case BadgerFolder.AppVersionFolder:
-                    ret = Badger.Deployment.Location.Current.VersionFolder;
+                    ret = Badger.Deployment.Location.Current.VersionFolder.FullPath;
                     break;
                 case BadgerFolder.AppInstallFolder:
                     ret = Badger.Deployment.Location.Current.InstallFolder;

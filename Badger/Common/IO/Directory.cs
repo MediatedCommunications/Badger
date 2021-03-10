@@ -9,6 +9,25 @@ using System.Threading.Tasks;
 namespace Badger.Common.IO {
     public class Directory {
 
+        public static long Size(string Path) {
+            var ret = default(long);
+
+            Actions.Try(() => {
+                foreach (var item in System.IO.Directory.GetFiles(Path)) {
+                    ret += Actions.Try(() => new System.IO.FileInfo(item).Length);
+                }
+            });
+
+            Actions.Try(() => {
+                foreach (var item in System.IO.Directory.GetDirectories(Path)) {
+                    ret += Actions.Try(() => Size(item));
+                }
+            });
+
+            return ret;
+        }
+
+
         public static bool Create(string Directory) => Create(Directory, out _);
 
         public static bool Create(string Directory, out Exception ex) {

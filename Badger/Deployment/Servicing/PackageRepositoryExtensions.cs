@@ -16,14 +16,12 @@ namespace Badger.Deployment.Servicing {
                 .ConfigureAwait(false)
                 ;
 
-            ret.CurrentVersion = Environment.Version;
-
             //Find the newest available version
             var PotentialFutureVersion = (
                 from x in AvailableReleases
                 let FN = x.FileName()
                 let VN = FN.VersionNumber
-                where VN != null && (ret.CurrentVersion == null || VN > ret.CurrentVersion)
+                where VN != null 
                 orderby VN descending
                 select new {
                     PackageEntry = x,

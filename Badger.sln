@@ -11,11 +11,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Default.Installer.St
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Default.Packager", "Badger.Default.Packager\Badger.Default.Packager.csproj", "{8E8B5C91-8218-411B-8837-F5D329874C0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badger.Default.Packager.Utilities.GetIcon", "Badger.Default.Packager.Utilities.GetIcon\Badger.Default.Packager.Utilities.GetIcon.csproj", "{16965E46-917C-49DB-A80D-E8BBB44EDC6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Default.Packager.Utilities.GetIcon", "Badger.Default.Packager.Utilities.GetIcon\Badger.Default.Packager.Utilities.GetIcon.csproj", "{16965E46-917C-49DB-A80D-E8BBB44EDC6B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Default.Redirector.StubExecutable", "Badger.Default.Redirector.StubExecutable\Badger.Default.Redirector.StubExecutable.csproj", "{898D5297-C686-473F-9F21-0A4F67E22B28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badger.Default.Uninstaller.StubExecutable", "Badger.Default.Uninstaller.StubExecutable\Badger.Default.Uninstaller.StubExecutable.csproj", "{C728C991-B3B1-4754-8481-2FEFDE04DEA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Badger.Default.Uninstaller.StubExecutable", "Badger.Default.Uninstaller.StubExecutable\Badger.Default.Uninstaller.StubExecutable.csproj", "{C728C991-B3B1-4754-8481-2FEFDE04DEA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{2EE636D4-D7FE-413F-B1D6-CCC9B7D891D1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packager", "Packager", "{D4E908EC-9336-4004-9E5B-7440D891C3AF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Redirector", "Redirector", "{1ECDB681-EB0D-486C-878C-EB8CD2262852}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +60,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B2C43A66-3942-4B80-8FFB-61C54BA7F103} = {2EE636D4-D7FE-413F-B1D6-CCC9B7D891D1}
+		{8E8B5C91-8218-411B-8837-F5D329874C0F} = {D4E908EC-9336-4004-9E5B-7440D891C3AF}
+		{16965E46-917C-49DB-A80D-E8BBB44EDC6B} = {D4E908EC-9336-4004-9E5B-7440D891C3AF}
+		{898D5297-C686-473F-9F21-0A4F67E22B28} = {1ECDB681-EB0D-486C-878C-EB8CD2262852}
+		{C728C991-B3B1-4754-8481-2FEFDE04DEA4} = {2EE636D4-D7FE-413F-B1D6-CCC9B7D891D1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {739453C5-BEEB-472C-9508-09F890632C2B}

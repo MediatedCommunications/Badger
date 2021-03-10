@@ -4,13 +4,15 @@ using Badger.Deployment;
 using Badger.Default.Installer;
 using System;
 using System.Collections.Generic;
+using Badger.Default.Configuration;
 
 namespace Badger.Default.Packager {
        
     public static class Defaults {
         public static SigningConfiguration SigningConfiguration() {
             var ret = new SigningConfiguration() {
-                Application = Utilities.SignTool.CommandLine.ExecutablePath,
+                Application = Utilities.SignTool.CommandLine.ExecutableName,
+                Path = Utilities.SignTool.CommandLine.FolderPath,
                 ArgumentTemplate = Utilities.SignTool.CommandLine.SignParameterTemplateDefault,
                 Enabled = false,
             };
@@ -39,13 +41,13 @@ namespace Badger.Default.Packager {
         public static IconExternalToolConfiguration IconExternalToolConfiguration() {
             return new IconExternalToolConfiguration() {
                 Get = new ExternalToolConfiguration() {
-                    Enabled = true,
-                    Application = Utilities.GetIcon.CommandLine.ExecutablePath,
+                    Path = Utilities.GetIcon.CommandLine.FolderPath,
+                    Application = Utilities.GetIcon.CommandLine.ExecutableName,
                     ArgumentTemplate = Utilities.GetIcon.CommandLine.ArgumentTemplate,
                 },
                 Set = new ExternalToolConfiguration() {
-                    Enabled = true,
-                    Application = Utilities.RcEdit.CommandLine.ExecutablePath,
+                    Path = Utilities.RcEdit.CommandLine.FolderPath,
+                    Application = Utilities.RcEdit.CommandLine.ExecutableName,
                     ArgumentTemplate = Utilities.RcEdit.CommandLine.Icons.SetParameterTemplate,
                 }
             };
@@ -65,13 +67,13 @@ namespace Badger.Default.Packager {
                     "ProductVersion",
                 },
                 Get = new ExternalToolConfiguration() {
-                    Enabled = true,
-                    Application = Utilities.RcEdit.CommandLine.ExecutablePath,
+                    Path = Utilities.RcEdit.CommandLine.FolderPath,
+                    Application = Utilities.RcEdit.CommandLine.ExecutableName,
                     ArgumentTemplate = Utilities.RcEdit.CommandLine.VersionStrings.GetParametersTemplate,
                 },
                 Set = new ExternalToolConfiguration() {
-                    Enabled = true,
-                    Application = Utilities.RcEdit.CommandLine.ExecutablePath,
+                    Path = Utilities.RcEdit.CommandLine.FolderPath,
+                    Application = Utilities.RcEdit.CommandLine.ExecutableName,
                     ArgumentTemplate = Utilities.RcEdit.CommandLine.VersionStrings.SetParametersTemplate,
                 }
             };
@@ -91,8 +93,8 @@ namespace Badger.Default.Packager {
         public static ArchiveConfiguration ArchiveConfiguration() {
             var ret = new ArchiveConfiguration() {
                 CreateUsing = new ExternalToolConfiguration() {
-                    Enabled = true,
-                    Application = Utilities.SevenZip.CommandLine.ExecutablePath,
+                    Path = Utilities.SevenZip.CommandLine.FolderPath,
+                    Application = Utilities.SevenZip.CommandLine.ExecutableName,
                     ArgumentTemplate = Utilities.SevenZip.CommandLine.SelfExtractingArchive.CreateParameterTemplate,
                 },
             };
@@ -128,15 +130,26 @@ namespace Badger.Default.Packager {
                 Archive = Defaults.ArchiveConfiguration(),
                 WorkingFolder = Defaults.WorkingFolderConfiguration(),
                 Installer = Defaults.InstallerConfiguration(),
+                Uninstaller = Defaults.UninstallerConfiguration(),
                 Output = Defaults.OutputConfiguration(),
             };
 
             return ret;
         }
 
+        public static UninstallerConfiguration UninstallerConfiguration() {
+            return new UninstallerConfiguration() {
+                Stub = new InstallerContentConfiguration() {
+                    Include = true,
+                    Source= typeof(Badger.Default.Uninstaller.StubExecutable.Program).Assembly.Location,
+                }
+            };
+        }
+
+
         public static OutputConfiguration OutputConfiguration() {
             return new OutputConfiguration() {
-                Path_NameTemplate = Application.Path,
+                Path_NameTemplate = Application.FolderPath,
                 Installer_NameTemplate = $@"{{{nameof(InstallerOutputParameters.PackageName)}}}-{{{nameof(InstallerOutputParameters.Version)}}}.exe",
                 Releases_NameTemplate = LocationHelpers.ReleasesFileName
             };
@@ -145,6 +158,7 @@ namespace Badger.Default.Packager {
         public static ProductConfiguration ProductConfiguration() {
             return new ProductConfiguration() {
                 Name = "NoName",
+                Publisher = "NoName",
                 Version = new Version(0, 0, 0)
             };
         }
@@ -153,12 +167,8 @@ namespace Badger.Default.Packager {
             var ret = new InstallerConfiguration() {
                 Playbook = new InstallerContentPlaybookConfiguration() {
                     ExtractContentToSubfolder = "NoName",
-
-                    CloseOldVersions = true,
-                    DeleteOldVersions = true,
-                    
+                   
                     ExtractContent = new ExternalToolConfiguration() {
-                        Enabled = true,
                         ArgumentTemplate = Utilities.SevenZip.CommandLine.SelfExtractingArchive.ExtractParameterTemplate,
                     },
                 },

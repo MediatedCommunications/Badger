@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Badger.Common.Diagnostics {
     public static class Application {
         public static Assembly EntryAssembly { get; private set; }
-        public static string Path { get; private set; }
+        public static string FolderPath { get; private set; }
 
         static Application() {
             {
@@ -20,7 +20,7 @@ namespace Badger.Common.Diagnostics {
             }
 
             {
-                Path = System.IO.Path.GetDirectoryName(EntryAssembly.Location);
+                FolderPath = System.IO.Path.GetDirectoryName(EntryAssembly.Location);
             }
 
         }

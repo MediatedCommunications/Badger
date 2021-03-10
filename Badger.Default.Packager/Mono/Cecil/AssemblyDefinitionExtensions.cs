@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Badger.Common.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Mono.Cecil {
             var ret = false;
 
             try {
-                var ResourceContent = Badger.Default.Installer.EasyBinarySerializer.Instance.ToByte(Content);
+                var ResourceContent = EasyBinarySerializer.Instance.ToByte(Content);
                 ret = This.AddFromBytes(ResourceName, ResourceContent);
             } catch (Exception ex) { 
             

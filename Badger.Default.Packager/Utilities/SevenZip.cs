@@ -1,4 +1,5 @@
 ﻿using Badger.Common.Diagnostics;
+using Badger.Default.Configuration;
 using Badger.Default.Installer;
 using StringTokenFormatter;
 using System;

@@ -1,4 +1,5 @@
 ﻿using Badger.Default.Installer;
+using Badger.Default.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,13 @@ using System.Windows.Media.Imaging;
 namespace Badger.Default.Installer.StubExecutable {
     public partial class SplashScreen {
 
-        public static void StartThread(Configuration Config) {
+        public static void StartThread(EmbeddedInstallerConfiguration Config) {
             var T = new System.Threading.Thread(() => WindowThread(Config));
             T.SetApartmentState(System.Threading.ApartmentState.STA);
             T.Start();
         }
 
-        static void WindowThread(Configuration Config) {
+        static void WindowThread(EmbeddedInstallerConfiguration Config) {
 
             var W = new SplashScreen();
 
@@ -31,7 +32,7 @@ namespace Badger.Default.Installer.StubExecutable {
                     W.DataModel.Image = B;
                 }
 
-                if (Config?.Package_Name is { } AppName) {
+                if (Config?.Product_Name is { } AppName) {
                     W.DataModel.Application_Name = AppName;
                 }
 

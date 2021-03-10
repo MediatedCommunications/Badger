@@ -12,27 +12,46 @@ using System.Windows.Media.Imaging;
 
 using static Badger.Common.Diagnostics.Log;
 using Badger.Deployment;
+using Badger.Default.Resources;
+using Badger.Default.Configuration;
+using Badger.Common;
 
 namespace Badger.Default.Installer.StubExecutable {
     public static class Program {
 
 
         [STAThread]
-        static async Task Main(string[] args) {
+        public static async Task Main(string[] args) {
             Badger.Common.Diagnostics.Logging.ApplySimpleConfiguation();
-
             var Logger = log4net.LogManager.GetLogger("Installer");
 
-            var Config = Badger.Default.Installer.ConfigurationResource.Get();
-
-            SplashScreen.StartThread(Config);
+            var Config = Badger.Default.Resources.EmbeddedConfigurationResource<EmbeddedInstallerConfiguration>.Get();
 
             if (Config is { }) {
+
+                var Options = new Mono.Options.OptionSet() {
+                    {$@"{nameof(EmbeddedInstallerConfiguration.SpashScreen_Visible)}=", "Toggle spash screen visibility", x => {
+                        Logger.Info($@"Setting SpashScreen Visibility to {x}:");
+                        if(bool.TryParse(x, out var v)) {
+                            Config.SpashScreen_Visible = v;
+                            Logger.Info($@"  Success!");
+                        } else {
+                            Logger.Info($@"  Invalid Value: {x}");
+                        }
+                    }},
+                };
+
+                Options.Parse(args);
+
+                if (Config.SpashScreen_Visible) {
+                    SplashScreen.StartThread(Config);
+                }
+
 
                 if (Config.Install_Subfolder is { } Subfolder) {
                     var Root = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
                     var InstallLocation = System.IO.Path.Combine(Root, Subfolder);
-                    var VersionFolder = System.IO.Path.Combine(InstallLocation, Badger.Deployment.VersionFolder.Name(Config.Package_Version));
+                    var VersionFolder = System.IO.Path.Combine(InstallLocation, Badger.Deployment.VersionFolder.Name(Config.Product_Version));
 
                     var PreviousVersion = (
                         from x in Badger.Deployment.VersionFolder.List(InstallLocation)
@@ -51,10 +70,14 @@ namespace Badger.Default.Installer.StubExecutable {
 
                     CurrentEnvironment.InstanceId = CurrentInstanceId;
 
-                    Config.Install_Location_Scripts.Run(VersionFolder, PreviousVersion, Config.Package_Version);
+                    await Uninstaller_Registry_Add(Config, InstallLocation);
+
+                    Config.Install_Location_Scripts.Run(VersionFolder, PreviousVersion, Config.Product_Version);
 
                 }
 
+            } else {
+                Logger.Error($@"This file does not seem to have the necessary resources embedded into it.");
             }
 
             //This does a hard stop.  Does not "properly" shutdown the Window thread but that's OK.
@@ -62,58 +85,42 @@ namespace Badger.Default.Installer.StubExecutable {
         }
 
 
-        private static async Task Install_Location_Kill(Configuration Config, string InstallLocation) {
-            if (Config.Install_Location_Kill) {
-                static List<WmiProcess> AppsToKill(string InstallLocation) {
-                    var AllApps = Badger.Common.Management.WmiProcess.Enumerate();
-                    var tret = (
-                        from x in AllApps
-                        where !string.IsNullOrWhiteSpace(x.ExecutablePath)
-                        where x.ExecutablePath.ToLower().StartsWith(InstallLocation.ToLower())
-                        select x
-                        ).ToList();
+        private static Task Uninstaller_Registry_Add(EmbeddedInstallerConfiguration Config, string InstallLocation) {
 
-                    return tret;
-                }
+            var Uninstaller = System.IO.Path.Combine(InstallLocation, "Uninstall.exe");
+            
+            if (Config.Uninstaller_Create && System.IO.File.Exists(Uninstaller) && Config.Product_Code.IsNotBlank()) {
+                var UninstallerConfig = new Windows.Installation.UninstallerRegistryConfiguration() { 
+                    InstallDate = DateTime.Now,
+                    
+                    CanModify = Windows.Installation.CanModifyValue.False,
+                    CanRepair = Windows.Installation.CanRepairValue.False,
+                    InstallLocation = InstallLocation,
+                    DisplayIcon = Uninstaller,
+                    DisplayVersion = Config.Product_Version.ToString(),
+                    DisplayName = Config.Product_Name,
+                    Publisher= Config.Product_Publisher,
+                    UninstallString = Uninstaller,
+                    EstimatedSizeInKb = Badger.Common.IO.Directory.Size(InstallLocation) / 1024,
+                };
 
-                var ToKill = AppsToKill(InstallLocation);
+                Badger.Windows.Installation.UninstallerRegistry.Default.AddOrUpdate(Config.Product_Code, UninstallerConfig);
 
-                foreach (var item in ToKill) {
-                    try {
-                        var Proc = System.Diagnostics.Process.GetProcessById(item.Handle);
-                        Proc.CloseMainWindow();
-                    } catch {
-
-                    }
-                }
-
-                for (int i = 0; i < 10 && ToKill.Count > 0; i++) {
-                    await Task.Delay(1_000);
-                    ToKill = AppsToKill(InstallLocation);
-                }
-
-
-                for (int i = 0; i < 10 && ToKill.Count > 0; i++) {
-                    foreach (var item in ToKill) {
-                        try {
-                            var Proc = System.Diagnostics.Process.GetProcessById(item.Handle);
-                            Proc.Kill();
-                        } catch {
-
-                        }
-                    }
-
-                    ToKill = AppsToKill(InstallLocation);
-                    if(ToKill.Count > 0) {
-                        await Task.Delay(1_000);
-                    }
-                }
-
-                
             }
+
+            return Task.CompletedTask;
+
         }
 
-        public static Task Install_Location_Clean(Configuration Config, string InstallLocation) {
+        private static Task Install_Location_Kill(EmbeddedInstallerConfiguration Config, string InstallLocation) {
+            if (Config.Install_Location_Kill) {
+                Badger.Common.Diagnostics.Processes.KillProcessesInPath(InstallLocation);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public static Task Install_Location_Clean(EmbeddedInstallerConfiguration Config, string InstallLocation) {
 
             if (Config.Install_Location_Clean) {
                 Badger.Common.IO.Directory.Delete(InstallLocation);
@@ -122,7 +129,7 @@ namespace Badger.Default.Installer.StubExecutable {
             return Task.CompletedTask;
         }
 
-        public static Task Install_Content_Deploy(Configuration Config, string InstallLocation) {
+        public static Task Install_Content_Deploy(EmbeddedInstallerConfiguration Config, string InstallLocation) {
             if (PackageContentResource.Resource.GetStream() is { } Content) {
                 var TempFile = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $@"{Config.Install_Subfolder}-{Guid.NewGuid()}.exe");
                 var Writer = System.IO.File.OpenWrite(TempFile);
@@ -138,7 +145,7 @@ namespace Badger.Default.Installer.StubExecutable {
             return Task.CompletedTask;
         }
 
-        public static Task Install_Package_Preserve(Configuration Config, string LocalRepositoryFolder, ILog Logger) {
+        public static Task Install_Package_Preserve(EmbeddedInstallerConfiguration Config, string LocalRepositoryFolder, ILog Logger) {
             var OriginalInstaller = System.Reflection.Assembly.GetEntryAssembly().Location;
             var DestFile = System.IO.Path.Combine(LocalRepositoryFolder, System.IO.Path.GetFileName(OriginalInstaller));
 

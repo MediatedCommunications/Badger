@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Badger.Default.Installer.StubExecutable\Badger.Default.Installer.StubExecutable.csproj" />
     <ProjectReference Include="..\Badger.Default.Packager.Utilities.GetIcon\Badger.Default.Packager.Utilities.GetIcon.csproj" />
     <ProjectReference Include="..\Badger.Default.Redirector.StubExecutable\Badger.Default.Redirector.StubExecutable.csproj" />
+    <ProjectReference Include="..\Badger.Default.Uninstaller.StubExecutable\Badger.Default.Uninstaller.StubExecutable.csproj" />
     <ProjectReference Include="..\Badger\Badger.csproj" />
   </ItemGroup>
   <ItemGroup>

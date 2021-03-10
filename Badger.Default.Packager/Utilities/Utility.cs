@@ -8,7 +8,7 @@ namespace Badger.Default.Packager.Utilities {
     public static class Utility {
         public static string AppPath {
             get {
-                var ret = Badger.Common.Diagnostics.Application.Path;
+                var ret = Badger.Common.Diagnostics.Application.FolderPath;
                 return ret;
             }
         }

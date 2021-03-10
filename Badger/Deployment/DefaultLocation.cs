@@ -15,31 +15,12 @@ namespace Badger.Deployment {
 
             //Set the version folder and the version number.
             {
-                var Version = default(Version);
-                var VersionFolder = default(string);
+                var MyVersionFolder = Badger.Deployment.VersionFolder.Find(Location);
 
-                var Start = Location;
-
-                while (!string.IsNullOrEmpty(Start)) {
-                    try {
-                        var CurrentFolder = System.IO.Path.GetFileName(Start);
-                        if (Badger.Deployment.VersionFolder.IsVersionFolder(CurrentFolder, out var V1)) {
-                            VersionFolder = Start;
-                            Version = V1;
-                            break;
-                        } else {
-                            Start = System.IO.Path.GetDirectoryName(Start);
-                        }
-                    } catch (Exception ex) {
-                        ex.Ignore();
-                        break;
-                    }
-                }
-                if (Version is { }) {
+                if (MyVersionFolder is { } V1) {
                     This = new DefaultLocation();
 
-                    This.Version = Version;
-                    This.VersionFolder = VersionFolder;
+                    This.VersionFolder = V1;
                 }
             }
 
@@ -47,7 +28,7 @@ namespace Badger.Deployment {
 
                 //Set the installation folder.
                 {
-                    This.InstallFolder = System.IO.Path.GetDirectoryName(This.VersionFolder);
+                    This.InstallFolder = System.IO.Path.GetDirectoryName(This.VersionFolder.FullPath);
                 }
 
                 {
@@ -68,8 +49,8 @@ namespace Badger.Deployment {
                 }
 
                 {
-                    This.InstallIdFolder = This.LocalRepositoryFolder;
-                    This.InstallIdFullPath = System.IO.Path.Combine(This.InstallIdFolder, LocationHelpers.InstallIdFileName);
+                    This.InstanceIdFolder = This.LocalRepositoryFolder;
+                    This.InstanceIdFullPath = System.IO.Path.Combine(This.InstanceIdFolder, LocationHelpers.InstallIdFileName);
                 }
             }
 
@@ -81,8 +62,8 @@ namespace Badger.Deployment {
                 var ret = default(Guid?);
 
                 try {
-                    if (System.IO.File.Exists(InstallIdFullPath)) {
-                        var Contents = System.IO.File.ReadAllText(InstallIdFullPath);
+                    if (System.IO.File.Exists(InstanceIdFullPath)) {
+                        var Contents = System.IO.File.ReadAllText(InstanceIdFullPath);
                         if(Guid.TryParse(Contents, out var value)) {
                             ret = value;
                         }
@@ -95,16 +76,16 @@ namespace Badger.Deployment {
             }
 
             set {
-                if (!System.IO.Directory.Exists(InstallIdFolder)) {
-                    System.IO.Directory.CreateDirectory(InstallIdFolder);
+                if (!System.IO.Directory.Exists(InstanceIdFolder)) {
+                    System.IO.Directory.CreateDirectory(InstanceIdFolder);
                 }
 
                 if(value == null) {
-                    if (System.IO.File.Exists(InstallIdFullPath)) {
-                        System.IO.File.Delete(InstallIdFullPath);
+                    if (System.IO.File.Exists(InstanceIdFullPath)) {
+                        System.IO.File.Delete(InstanceIdFullPath);
                     }
                 } else {
-                    System.IO.File.WriteAllText(InstallIdFullPath, value.ToString());
+                    System.IO.File.WriteAllText(InstanceIdFullPath, value.ToString());
                 }
 
             }

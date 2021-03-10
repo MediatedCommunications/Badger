@@ -27,7 +27,7 @@ namespace Badger.Deployment.Servicing.Http {
         }
 
         protected virtual Version Repository_QueryParameter_Version() {
-            return Location.Current.Version;
+            return Location.Current.VersionFolder.Version;
         }
 
         protected virtual string Repository_QueryParameter_Architecture() {

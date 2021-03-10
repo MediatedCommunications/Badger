@@ -14,10 +14,8 @@ namespace Badger.Common.Management {
         public string Name { get; private set; }
         public string CommandLine { get; private set; }
 
-        protected virtual string DebuggerDisplay {
-            get {
+        protected virtual string GetDebuggerDisplay() {
                 return $@"[{Handle}] {Name} => {CommandLine}";
-            }
         }
 
         public static List<WmiProcess> Enumerate() {

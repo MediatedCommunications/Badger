@@ -76,10 +76,8 @@ namespace Badger.Deployment.Servicing {
             return ret;
         }
 
-        protected virtual string DebuggerDisplay {
-            get {
+        protected virtual string GetDebuggerDisplay() {
                 return ToString();
-            }
         }
 
 
